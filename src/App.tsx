@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import './App.css';
 import Disk from './Disk';
+import Pointer from './Pointer';
 
 const Container = styled.div`
 	position: relative;
@@ -53,6 +54,7 @@ function App() {
 				<Container>
 					<Disk rotation={rotation} />
 					<Cover isOpen={isOpen || isPeeking} ref={coverRef} />
+					<Pointer />
 					<ButtonContainer>
 						<button onClick={isOpen ? onRandomizeClick : () => setIsOpen(true)}>{isOpen ? 'Randomize' : 'Reveal'}</button>
 						<button
