@@ -32,6 +32,7 @@ function App() {
 	const coverRef = React.createRef<HTMLDivElement>();
 	const [rotation, setRotation] = React.useState(0);
 	const [isOpen, setIsOpen] = React.useState(true);
+	const [isPeeking, setIsPeeking] = React.useState(false);
 	const randomize = React.useCallback(() => {
 		setRotation(Math.random() * 180);
 	}, []);
@@ -51,9 +52,14 @@ function App() {
 			<header className="App-header">
 				<Container>
 					<Disk rotation={rotation} />
-					<Cover isOpen={isOpen} ref={coverRef} />
+					<Cover isOpen={isOpen || isPeeking} ref={coverRef} />
 					<ButtonContainer>
 						<button onClick={onRandomizeClick}>Randomize</button>
+						<button
+							onMouseDown={() => setIsPeeking(true)}
+							onMouseUp={() => setIsPeeking(false)}
+							onMouseLeave={() => setIsPeeking(false)}
+						>Peek</button>
 						<button onClick={() => setIsOpen(!isOpen)}>{isOpen ? 'Close' : 'Open'}</button>
 					</ButtonContainer>
 				</Container>
