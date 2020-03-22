@@ -1,8 +1,17 @@
 import React from 'react';
+import styled from 'styled-components';
+
+const Canvas = styled.canvas<{ rotation: number }>`
+	transform: rotate(${props => props.rotation - 90}deg);
+`
 
 const SLICE_WIDTH = 10; // deg
 
-function Disk() {
+type Props = {
+	rotation: number
+}
+
+function Disk(props: Props) {
 	const canvasRef = React.createRef<HTMLCanvasElement>();
 	React.useEffect(() => {
 		if (canvasRef.current) {
@@ -45,7 +54,13 @@ function Disk() {
 			slice(-(Math.PI / 180) * 95, 'turquoise');
 		}
 	}, [canvasRef.current])
-	return <canvas width="500" height="500" ref={canvasRef}></canvas>
+	return <Canvas
+		width="500"
+		height="500"
+		ref={canvasRef}
+		rotation={props.rotation}
+	/>
+
 }
 
 export default Disk;
