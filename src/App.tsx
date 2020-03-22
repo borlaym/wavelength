@@ -22,7 +22,7 @@ const Cover = styled.div<{ isOpen: boolean }>`
 	border-top-left-radius: 250px;
 	border-top-right-radius: 250px;
 	top: 0px;
-	background: red;
+	background: turquoise;
 	transform-origin: center 100%;
 	transform: ${props => props.isOpen ? 'rotate(-180deg)' : 'rotate(0deg)'};
 	transition: transform 0.5s;
@@ -54,13 +54,14 @@ function App() {
 					<Disk rotation={rotation} />
 					<Cover isOpen={isOpen || isPeeking} ref={coverRef} />
 					<ButtonContainer>
-						<button onClick={onRandomizeClick}>Randomize</button>
+						<button onClick={isOpen ? onRandomizeClick : () => setIsOpen(true)}>{isOpen ? 'Randomize' : 'Reveal'}</button>
 						<button
 							onMouseDown={() => setIsPeeking(true)}
 							onMouseUp={() => setIsPeeking(false)}
 							onMouseLeave={() => setIsPeeking(false)}
-						>Peek</button>
-						<button onClick={() => setIsOpen(!isOpen)}>{isOpen ? 'Close' : 'Open'}</button>
+						>
+							Peek
+						</button>
 					</ButtonContainer>
 				</Container>
 			</header>
