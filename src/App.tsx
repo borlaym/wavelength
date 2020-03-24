@@ -40,6 +40,7 @@ function App(props: Props) {
 	const [rotation, setRotation] = React.useState(0);
 	const [isOpen, setIsOpen] = React.useState(true);
 	const [isPeeking, setIsPeeking] = React.useState(false);
+	const [forcePointer, setforcePointer] = React.useState(0);
 	const randomize = React.useCallback(() => {
 		const rotation = Math.random() * 180;
 		database.ref('/discRotation').set(rotation);
@@ -64,13 +65,21 @@ function App(props: Props) {
 		database.ref('/revealed').set(true);
 		setIsOpen(true);
 	}, []);
+	React.useEffect(() => {
+		database.ref().on('value', (data) => {
+			const values = data.val();
+			setRotation(values.discRotation);
+			setIsOpen(values.revealed);
+			setforcePointer(values.pointerRotation);
+		})
+	}, []);
 	return (
 		<div className="App">
 			<header className="App-header">
 				<Container>
 					<Disk rotation={rotation} />
 					<Cover isOpen={isOpen || isPeeking} ref={coverRef} />
-					<Pointer onChange={handlePointerChange} />
+					<Pointer onChange={handlePointerChange} forceRotation={forcePointer} />
 					<ButtonContainer>
 						<button onClick={isOpen ? onRandomizeClick : reveal}>{isOpen ? 'Randomize' : 'Reveal'}</button>
 						<button

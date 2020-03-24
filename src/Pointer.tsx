@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import useEventListener from './useEventListener';
 
 interface Props {
-	onChange: (rotation: number) => void
+	onChange: (rotation: number) => void,
+	forceRotation: number
 }
 
 const Handle = styled.div.attrs<{ rotation: number }>(props => ({
@@ -24,7 +25,7 @@ export default function Pointer(props: Props) {
 	const handleRef = React.useRef<HTMLDivElement | null>(null);
 	const [isDragging, setIsDragging] = React.useState(false);
 	const [startX, setStartX] = React.useState(0);
-	const [rotation, setRotation] = React.useState(0);
+	const [rotation, setRotation] = React.useState(props.forceRotation);
 	const onMouseDown = React.useCallback((event: MouseEvent) => {
 		if (!handleRef.current) {
 			return;
@@ -49,6 +50,10 @@ export default function Pointer(props: Props) {
 		setStartX(event.x);
 		setRotation(Math.max(Math.min(rotation + d / 2, 90), -90));
 	}, [isDragging, rotation, startX]);
+	React.useEffect(() => {
+		setIsDragging(false);
+		setRotation(props.forceRotation);
+	}, [props.forceRotation]);
 	useEventListener('mousedown', onMouseDown);
 	useEventListener('mouseup', onMouseUp);
 	useEventListener('mousemove', onMouseMove);
