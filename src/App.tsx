@@ -3,6 +3,11 @@ import styled from 'styled-components';
 import './App.css';
 import Disk from './Disk';
 import Pointer from './Pointer';
+import { database } from 'firebase';
+
+interface Props {
+	database: database.Database
+}
 
 const Container = styled.div`
 	position: relative;
@@ -29,13 +34,16 @@ const Cover = styled.div<{ isOpen: boolean }>`
 	transition: transform 0.5s;
 `
 
-function App() {
+function App(props: Props) {
+	const database = props.database;
 	const coverRef = React.createRef<HTMLDivElement>();
 	const [rotation, setRotation] = React.useState(0);
 	const [isOpen, setIsOpen] = React.useState(true);
 	const [isPeeking, setIsPeeking] = React.useState(false);
 	const randomize = React.useCallback(() => {
-		setRotation(Math.random() * 180);
+		const rotation = Math.random() * 180;
+		database.ref('/discRotation').set(rotation);
+		setRotation(rotation);
 	}, []);
 	const onRandomizeClick = React.useCallback(() => {
 		if (!coverRef.current) {
@@ -43,20 +51,28 @@ function App() {
 		}
 		if (isOpen) {
 			setIsOpen(false);
+			database.ref('/revealed').set(false);
 			coverRef.current.addEventListener('transitionend', randomize, { once: true });
 		} else {
 			randomize();
 		}
 	}, [isOpen, coverRef, randomize]);
+	const handlePointerChange = React.useCallback((rotation: number) => {
+		database.ref('/pointerRotation').set(rotation);
+	}, []);
+	const reveal = React.useCallback(() => {
+		database.ref('/revealed').set(true);
+		setIsOpen(true);
+	}, []);
 	return (
 		<div className="App">
 			<header className="App-header">
 				<Container>
 					<Disk rotation={rotation} />
 					<Cover isOpen={isOpen || isPeeking} ref={coverRef} />
-					<Pointer />
+					<Pointer onChange={handlePointerChange} />
 					<ButtonContainer>
-						<button onClick={isOpen ? onRandomizeClick : () => setIsOpen(true)}>{isOpen ? 'Randomize' : 'Reveal'}</button>
+						<button onClick={isOpen ? onRandomizeClick : reveal}>{isOpen ? 'Randomize' : 'Reveal'}</button>
 						<button
 							onMouseDown={() => setIsPeeking(true)}
 							onMouseUp={() => setIsPeeking(false)}
